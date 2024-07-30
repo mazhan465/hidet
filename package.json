@@ -23,6 +23,7 @@
     "@electron/fuses": "^1.8.0",
     "@vitejs/plugin-vue": "^5.1.1",
     "electron": "31.3.1",
+    "unplugin-vue-components": "^0.27.3",
     "vite": "^5.3.5"
   },
   "keywords": [],
@@ -32,6 +33,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "ant-design-vue": "^4.2.3",
     "dexie": "^4.0.8",
     "dexie-export-import": "^4.1.2",
     "electron-squirrel-startup": "^1.0.1",

@@ -11,7 +11,7 @@ if (require("electron-squirrel-startup")) {
 const createWindow = () => {
   var desktop_wh = db.get("desktop_wh");
   var desktop_wz = db.get("desktop_wz");
-console.log(desktop_wh, desktop_wz)
+  console.log(desktop_wh, desktop_wz);
   if (!desktop_wh) {
     desktop_wh = "400,300";
   }
@@ -36,7 +36,7 @@ console.log(desktop_wh, desktop_wz)
     x: y,
     maximizable: false,
     minimizable: false,
-    transparent: true,
+    transparent: false,
     resizable: true,
     frame: false,
     hasShadow: false,
@@ -46,6 +46,7 @@ console.log(desktop_wh, desktop_wz)
     },
   });
   mainWindow.setOpacity(1.0);
+  mainWindow.setAlwaysOnTop(true);
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
@@ -64,8 +65,8 @@ console.log(desktop_wh, desktop_wz)
     var position = mainWindow.getPosition();
     db.set("desktop_wz", position[0].toString() + "," + position[1].toString());
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
   });
+  mainWindow.webContents.openDevTools();
 };
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
