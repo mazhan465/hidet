@@ -36,7 +36,7 @@ export default {
   get(key) {
     this.db_util.read();
     const { cfg } = this.db_util.data;
-    const line = cfg.find((p) => (p.key = key));
+    const line = cfg.find((p) => p.key === key);
     if (line) {
       return line.val;
     }
