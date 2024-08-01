@@ -32,7 +32,14 @@ export default {
       if (event == "showMenu") {
         this.showMenu = !this.showMenu;
       }
+      if (event == "save") {
+        window.electron.WriteContent(this.filePath, this.fileContent);
+      }
     });
+
+    setInterval(() => {
+      window.electron.WriteContent(this.filePath, this.fileContent);
+    }, 5000);
   },
   methods: {},
 };

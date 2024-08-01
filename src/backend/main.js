@@ -84,6 +84,9 @@ const createWindow = () => {
   globalShortcut.register("c", () => {
     mainWindow.webContents.send("shortcut", "showMenu"); // 发送事件到渲染进程
   });
+  globalShortcut.register("CommandOrControl+S", () => {
+    mainWindow.webContents.send("shortcut", "save"); // 发送事件到渲染进程
+  });
 
   globalShortcut.register("CommandOrControl+M", () => {
     if (mainWindow.isVisible()) {
