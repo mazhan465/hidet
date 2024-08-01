@@ -1,5 +1,12 @@
-import { app, BrowserWindow, ipcMain } from "electron";
-const fs = require('fs');
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  Menu,
+  MenuItem,
+  globalShortcut,
+} from "electron";
+const fs = require("fs");
 const path = require("node:path");
 import db from "./util/db";
 db.init();
@@ -46,9 +53,46 @@ const createWindow = () => {
       nodeIntegration: true,
     },
   });
+  //设置快捷键
+  const menu = new Menu();
+  menu.append(
+    new MenuItem({
+      label: "my",
+      submenu: [
+        {
+          label: "Opacity-",
+          visible: false,
+          accelerator: "-",
+          click: () => {
+            mainWindow.setOpacity(mainWindow.getOpacity() - 0.1);
+          },
+        },
+        {
+          label: "Opacity+",
+          accelerator: "=",
+          click: () => {
+            mainWindow.setOpacity(mainWindow.getOpacity() + 0.1);
+          },
+        },
+      ],
+    })
+  );
+  Menu.setApplicationMenu(menu);
   mainWindow.setOpacity(0.5);
   mainWindow.setAlwaysOnTop(true);
-  // and load the index.html of the app.
+
+  globalShortcut.register("c", () => {
+    mainWindow.webContents.send("shortcut", "showMenu"); // 发送事件到渲染进程
+  });
+
+  globalShortcut.register("CommandOrControl+M", () => {
+    if (mainWindow.isVisible()) {
+      mainWindow.hide();
+    } else {
+      mainWindow.show();
+    }
+  });
+
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
   } else {

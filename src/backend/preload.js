@@ -7,7 +7,6 @@ contextBridge.exposeInMainWorld("electron", {
   ReadContent: async (filePath) => {
     try {
       const content = await ipcRenderer.invoke("readFile", filePath);
-      console.log("read file content:", content);
       return content;
     } catch (error) {
       console.error("Failed to read file in renderer process:", error);
@@ -21,5 +20,8 @@ contextBridge.exposeInMainWorld("electron", {
     } catch (error) {
       console.error("Failed to write file in renderer process:", error);
     }
+  },
+  Listen: (channel, func) => {
+    ipcRenderer.on(channel, (event, ...args) => func(...args));
   },
 });

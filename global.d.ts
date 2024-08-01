@@ -4,7 +4,8 @@ declare global {
     interface Window {
         electron: {
             ReadContent: (filePath: string) => Promise<string>;
-            WriteContent: (filePath:string, content: string) => void;
+            WriteContent: (filePath: string, content: string) => void;
+            Listen: (channel: string, func: (...args: any[]) => void) => void;
             // 添加其他需要的 Electron API
         };
     }
