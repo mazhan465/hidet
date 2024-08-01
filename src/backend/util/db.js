@@ -12,14 +12,6 @@ export default {
     };
   },
   async init() {
-    // if (process.env.NODE_ENV !== 'development') {
-    //     global.__static = path.join(__dirname, '/static').replace(/\\/g, '\\\\')
-    // }
-
-    // if (process.env.DEBUG_ENV === 'debug') {
-    //     global.__static = path.join(__dirname, '../../static').replace(/\\/g, '\\\\')
-    // }
-
     let APP = process.type === "renderer" ? remote.app : app;
     let STORE_PATH = APP.getPath("userData");
     // let STORE_PATH = "/Users/sanjin/work/h5/vue/thief-book/static"

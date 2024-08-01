@@ -1,4 +1,5 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
+const fs = require('fs');
 const path = require("node:path");
 import db from "./util/db";
 db.init();
@@ -45,7 +46,7 @@ const createWindow = () => {
       nodeIntegration: true,
     },
   });
-  mainWindow.setOpacity(1.0);
+  mainWindow.setOpacity(0.5);
   mainWindow.setAlwaysOnTop(true);
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
@@ -65,6 +66,26 @@ const createWindow = () => {
     var position = mainWindow.getPosition();
     db.set("desktop_wz", position[0].toString() + "," + position[1].toString());
     // Open the DevTools.
+  });
+
+  ipcMain.handle("readFile", async (event, filePath) => {
+    try {
+      const data = await fs.promises.readFile(filePath, "utf8");
+      return data;
+    } catch (error) {
+      console.error("Failed to read file:", error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle("writeFile", async (event, { filePath, content }) => {
+    try {
+      await fs.promises.writeFile(filePath, content, "utf8");
+      return true;
+    } catch (error) {
+      console.error("Failed to write file:", error);
+      throw error;
+    }
   });
   mainWindow.webContents.openDevTools();
 };
