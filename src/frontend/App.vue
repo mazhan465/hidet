@@ -1,5 +1,5 @@
 <template>
-  <div :style="{ height: '100%', width: '100%' }">
+  <div>
     <div v-show="showMenu">
       <a-float-button-group :style="{ right: '24px' }">
         <a-upload :file-list="fileList" :before-upload="handleOpenFile">
@@ -10,7 +10,8 @@
     <a-textarea
       v-model:value="fileContent"
       placeholder="Autosize height based on content lines"
-      :style="{ height: '100%', width: '100%' }"
+      :bordered="false"
+      :style="{ height: '100%', width: '100%', margin: '0px' }"
     />
   </div>
 </template>
