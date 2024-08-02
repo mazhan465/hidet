@@ -26,14 +26,14 @@ export default {
     };
   },
   mounted() {
-    window.electron.GetFilePath().then((filePath:string) => {
+    window.electron.GetFilePath().then((filePath: string) => {
       console.log("filePath:", filePath);
       this.filePath = filePath;
       if (this.filePath != "") {
-      this.ReadContent();
-    }
+        this.ReadContent();
+      }
     });
-   
+
     window.electron.Listen("shortcut", (event: string, arg) => {
       if (event == "showMenu") {
         this.showMenu = !this.showMenu;
@@ -53,7 +53,7 @@ export default {
         this.fileContent = content;
       });
     },
-    handleOpenFile(file:any) {
+    handleOpenFile(file: any) {
       this.filePath = file.path;
       this.ReadContent();
       window.electron.SetFilePath(file.path);
@@ -62,3 +62,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.a-textarea {
+  flex: 1; /* 填充剩余空间 */
+}
+</style>
