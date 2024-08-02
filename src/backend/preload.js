@@ -15,7 +15,10 @@ contextBridge.exposeInMainWorld("electron", {
   },
   WriteContent: async (filePath, content) => {
     try {
-      await ipcRenderer.invoke("writeFile", { filePath: filePath, content: content });
+      await ipcRenderer.invoke("writeFile", {
+        filePath: filePath,
+        content: content,
+      });
       console.log("File written successfully.");
     } catch (error) {
       console.error("Failed to write file in renderer process:", error);
@@ -23,5 +26,21 @@ contextBridge.exposeInMainWorld("electron", {
   },
   Listen: (channel, func) => {
     ipcRenderer.on(channel, (event, ...args) => func(...args));
+  },
+  GetFilePath: async () => {
+    try {
+      const filePath = await ipcRenderer.invoke("getFilePath");
+      return filePath;
+    } catch (error) {
+      console.error("Failed to get file path in renderer process:", error);
+      return "read content error";
+    }
+  },
+  SetFilePath: async (filePath) => {
+    try {
+      await ipcRenderer.invoke("setFilePath", filePath);
+    } catch (error) {
+      console.error("Failed to set file path in renderer process:", error);
+    }
   },
 });

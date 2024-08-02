@@ -74,6 +74,13 @@ const createWindow = () => {
             mainWindow.setOpacity(mainWindow.getOpacity() + 0.1);
           },
         },
+        {
+          label: "hideMuen",
+          accelerator: "c",
+          click: () => {
+            mainWindow.webContents.send("shortcut", "showMenu"); // 发送事件到渲染进程
+          },
+        },
       ],
     })
   );
@@ -81,9 +88,6 @@ const createWindow = () => {
   mainWindow.setOpacity(0.5);
   mainWindow.setAlwaysOnTop(true);
 
-  globalShortcut.register("c", () => {
-    mainWindow.webContents.send("shortcut", "showMenu"); // 发送事件到渲染进程
-  });
   globalShortcut.register("CommandOrControl+S", () => {
     mainWindow.webContents.send("shortcut", "save"); // 发送事件到渲染进程
   });
@@ -131,6 +135,24 @@ const createWindow = () => {
       return true;
     } catch (error) {
       console.error("Failed to write file:", error);
+      throw error;
+    }
+  });
+  ipcMain.handle("getFilePath", async (event) => {
+    try {
+      return db.get("filePath");
+    } catch (error) {
+      console.error("Failed to get file path:", error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle("setFilePath", async (event, filePath) => {
+    try {
+      db.set("filePath", filePath);
+      return true;
+    } catch (error) {
+      console.error("Failed to set file path:", error);
       throw error;
     }
   });
