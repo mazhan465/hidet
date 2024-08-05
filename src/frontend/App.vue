@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div class="divx" v-show="showMenu"></div>
     <div v-show="showMenu">
       <a-float-button-group :style="{ right: '24px' }">
         <a-upload :file-list="fileList" :before-upload="handleOpenFile">
@@ -8,9 +9,11 @@
       </a-float-button-group>
     </div>
     <a-textarea
+      ref="textarea"
       v-model:value="fileContent"
       placeholder="Autosize height based on content lines"
       :bordered="false"
+      :rows="computedRows"
       :style="{ height: '100%', width: '100%', margin: '0px' }"
     />
   </div>
@@ -24,9 +27,15 @@ export default {
       fileContent: "", // 文件内容
       showMenu: true,
       fileList: [],
+      lineSpacing: 62,
+      computedRows: 1,
     };
   },
   mounted() {
+    this.calculateRows(); // 初始计算行数
+
+    // 监听窗口大小变化，实时更新行数
+    window.addEventListener("resize", this.handleResize);
     window.electron.GetFilePath().then((filePath: string) => {
       console.log("filePath:", filePath);
       this.filePath = filePath;
@@ -44,9 +53,9 @@ export default {
       }
     });
 
-    // setInterval(() => {
-    //   window.electron.WriteContent(this.filePath, this.fileContent);
-    // }, 5000);
+    setInterval(() => {
+      window.electron.WriteContent(this.filePath, this.fileContent);
+    }, 5000);
   },
   methods: {
     async ReadContent() {
@@ -60,6 +69,16 @@ export default {
       window.electron.SetFilePath(file.path);
       return false;
     },
+    calculateRows() {
+      this.computedRows = Math.floor(window.innerHeight / this.lineSpacing);
+    },
+    handleResize() {
+      this.calculateRows();
+    },
+  },
+  beforeUnmount() {
+    // 清理监听器
+    window.removeEventListener("resize", this.handleResize);
   },
 };
 </script>
@@ -67,5 +86,13 @@ export default {
 <style scoped>
 .a-textarea {
   flex: 1; /* 填充剩余空间 */
+}
+.divx {
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  z-index: 999;
+  background-color: rgba(255, 255, 230, 0.5);
+  -webkit-app-region: drag;
 }
 </style>
