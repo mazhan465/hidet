@@ -2,7 +2,9 @@ import {
   app,
   BrowserWindow,
   ipcMain,
+  Tray,
   Menu,
+  nativeImage,
   MenuItem,
   globalShortcut,
 } from "electron";
@@ -10,6 +12,7 @@ const fs = require("fs");
 const path = require("node:path");
 import db from "./util/db";
 db.init();
+var editor_window = null;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -19,7 +22,6 @@ if (require("electron-squirrel-startup")) {
 const createWindow = () => {
   var desktop_wh = db.get("desktop_wh");
   var desktop_wz = db.get("desktop_wz");
-  console.log(desktop_wh, desktop_wz);
   if (!desktop_wh) {
     desktop_wh = "400,300";
   }
@@ -87,6 +89,7 @@ const createWindow = () => {
   Menu.setApplicationMenu(menu);
   mainWindow.setOpacity(0.5);
   mainWindow.setAlwaysOnTop(true);
+  editor_window = mainWindow;
 
   globalShortcut.register("CommandOrControl+S", () => {
     mainWindow.webContents.send("shortcut", "save"); // 发送事件到渲染进程
@@ -118,51 +121,72 @@ const createWindow = () => {
     db.set("desktop_wz", position[0].toString() + "," + position[1].toString());
     // Open the DevTools.
   });
-
-  ipcMain.handle("readFile", async (event, filePath) => {
-    try {
-      const data = await fs.promises.readFile(filePath, "utf8");
-      return data;
-    } catch (error) {
-      console.error("Failed to read file:", error);
-      throw error;
-    }
-  });
-
-  ipcMain.handle("writeFile", async (event, { filePath, content }) => {
-    try {
-      await fs.promises.writeFile(filePath, content, "utf8");
-      return true;
-    } catch (error) {
-      console.error("Failed to write file:", error);
-      throw error;
-    }
-  });
-  ipcMain.handle("getFilePath", async (event) => {
-    try {
-      return db.get("filePath");
-    } catch (error) {
-      console.error("Failed to get file path:", error);
-      throw error;
-    }
-  });
-
-  ipcMain.handle("setFilePath", async (event, filePath) => {
-    try {
-      db.set("filePath", filePath);
-      return true;
-    } catch (error) {
-      console.error("Failed to set file path:", error);
-      throw error;
-    }
-  });
   //mainWindow.webContents.openDevTools();
 };
+
+ipcMain.handle("readFile", async (event, filePath) => {
+  try {
+    const data = await fs.promises.readFile(filePath, "utf8");
+    return data;
+  } catch (error) {
+    console.error("Failed to read file:", error);
+    throw error;
+  }
+});
+
+ipcMain.handle("writeFile", async (event, { filePath, content }) => {
+  try {
+    await fs.promises.writeFile(filePath, content, "utf8");
+    return true;
+  } catch (error) {
+    console.error("Failed to write file:", error);
+    throw error;
+  }
+});
+ipcMain.handle("getFilePath", async (event) => {
+  try {
+    return db.get("filePath");
+  } catch (error) {
+    console.error("Failed to get file path:", error);
+    throw error;
+  }
+});
+
+ipcMain.handle("setFilePath", async (event, filePath) => {
+  try {
+    db.set("filePath", filePath);
+    return true;
+  } catch (error) {
+    console.error("Failed to set file path:", error);
+    throw error;
+  }
+});
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  createWindow();
+  const icon_path = path.join(__dirname, "static", "work.svg");
+  console.log("icon_path", icon_path);
+  const icon = nativeImage.createFromPath(icon_path);
+  const tray = new Tray(icon);
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: "editor",
+      type: "radio",
+      click: () => {
+        if (editor_window === null) {
+          createWindow();
+        } else {
+          editor_window.close();
+          editor_window = null;
+        }
+      },
+    },
+  ]);
+
+  tray.setContextMenu(contextMenu);
+  tray.setToolTip("clike menu to open window");
+  tray.setTitle("hidet");
 
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.

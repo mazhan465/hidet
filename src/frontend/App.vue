@@ -92,7 +92,6 @@ export default {
   height: 30px;
   position: absolute;
   z-index: 999;
-  background-color: rgba(255, 255, 230, 0.5);
   -webkit-app-region: drag;
 }
 </style>
